@@ -375,9 +375,9 @@ def get_api_key():
     if openrouter_key and openrouter_key.startswith("sk-or-v1-"):
         print("✅ Using OpenRouter (Google Gemini via OpenRouter) - FREE")
         return openrouter_key, "openrouter"
-    elif openai_key:
-        print("✅ Using OpenAI API")
-        return openai_key, "openai"
+    elif openrouter_key:
+        print("✅ Using OpenAI API Key (non-OpenRouter)")
+        return openrouter_key, "openai"
     elif google_key:
         print("✅ Using Google AI Studio (via OpenRouter)")
         # For Google keys, we need to use them through OpenRouter
