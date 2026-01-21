@@ -366,12 +366,55 @@ with st.sidebar:
 
 # ==================== MAIN AREA ====================
 
+# ==================== ENVIRONMENT CHECK ====================
+
+# Check API key first
+api_key = os.getenv('OPENAI_API_KEY', '')
+base_url = os.getenv('OPENAI_BASE_URL', '')
+model_name = os.getenv('OPENAI_MODEL', '')
+
+# Show critical error if API key is missing
+if not api_key:
+    st.error("""
+    ### ⚠️ API Key Missing!
+
+    **OPENAI_API_KEY** environment variable is not set.
+
+    **Steps to fix:**
+    1. Go to your app on Streamlit Cloud
+    2. Click on **Settings** > **Secrets**
+    3. Add this TOML:
+
+    ```toml
+    OPENAI_API_KEY = "sk-or-v1-your-key-here"
+    OPENAI_BASE_URL = "https://openrouter.ai/api/v1"
+    OPENAI_MODEL = "google/gemini-2.0-flash-exp:free"
+    ```
+
+    4. Save and wait 1-2 minutes
+    5. Refresh this page
+    """)
+    st.stop()
+
 # Debug info (collapsible)
-with st.expander("🔧 Debug Info"):
-    st.write(f"**Model:** {os.getenv('OPENAI_MODEL', 'Not set')}")
-    st.write(f"**Base URL:** {os.getenv('OPENAI_BASE_URL', 'Not set')}")
-    st.write(f"**API Key:** {'✅ Set' if os.getenv('OPENAI_API_KEY') else '❌ Missing'}")
+with st.expander("🔧 Debug Info", expanded=True):
+    st.write(f"**Model:** {model_name or 'Not set'}")
+    st.write(f"**Base URL:** {base_url or 'Not set'}")
+    st.write(f"**API Key:** {'✅ Set (' + api_key[:20] + '...)' if api_key else '❌ Missing'}")
+    st.write(f"**Key Length:** {len(api_key) if api_key else 0}")
+    st.write(f"**Key Starts with sk-or-v1:** {api_key.startswith('sk-or-v1-') if api_key else False}")
     st.write(f"**Max Tokens:** 2000")
+
+    # Show environment variables status
+    st.markdown("---")
+    st.markdown("### 📋 Environment Variables Status:")
+    env_vars = ['OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_MODEL']
+    for var in env_vars:
+        value = os.getenv(var, '')
+        if value:
+            st.success(f"✅ `{var}` = {value[:30]}..." if len(value) > 30 else f"✅ `{var}` = {value}")
+        else:
+            st.error(f"❌ `{var}` = Not set")
 
 # Header
 st.markdown("""
